@@ -136,7 +136,7 @@ public class TimeTable {
         ArrayList<String> student;
         int[][] conflict_matrix;
         try {
-            
+            long starttimer = System.nanoTime();
             FileReader fcr = new FileReader(crs);
             BufferedReader cr = new BufferedReader(fcr);
             
@@ -307,18 +307,10 @@ public class TimeTable {
                     System.out.println("");
                 }   
 
-//            for(int i=0; i<timeslot.length; i++)
-//                {
-//                        for(int j=0; j<timeslot[i].length; j++)
-//                        {
-//                                timeslot[i][0] = i+1;
-////                                timeslot[i][1] = -1;
-//                        }
-//                }
 
             //timesloting
             //start timer
-            long starttimer = System.nanoTime();
+            
             for(int i=0; i<sdegrees.length; i++){
                     for(int j=0; j<ts; j++){
                             if(issafe(i, j, conflict_matrix, sdegrees, timeslot)){
@@ -331,17 +323,6 @@ public class TimeTable {
             }
              
             
-            
-//            int ts=1;
-//            for(int i=0; i<course.size();i++){
-//                for(int j=0; j<ts; j++){
-//                    if(conflict_matrix[sdegrees[i][0]-1][i]==0 && timeslot[i][1] != j)
-//                    {timeslot[sdegrees[i][0]-1][1] = j;
-//                        break;
-//                    }else
-//                        ts++;
-//                }   
-//            }
 
                 
             
@@ -367,9 +348,22 @@ public class TimeTable {
             ///////////////////////////////////////////////////////////////////
             //penalty cij
             double penalty = 0;
-            
+            double penaltyFinal = 0;
             //jumlah jumlah siswa yang mengambil dua course i j bersamaan x 2 pgkt(5-abs tj-ti) 
-            //penalty = (cij*(Math.pow(2, (5-(Math.abs(tj - ti))))))/student.size();
+            for(int i=0;i<conflict_matrix.length-1;i++){
+                for(int j=i+1;j<conflict_matrix.length;j++){
+                    if(conflict_matrix[i][j]!=0){
+                        if(Math.abs(timeslot[j][1]-timeslot[i][1])>=1 && Math.abs(timeslot[j][1]-timeslot[i][1])<=5){
+                            penalty = penalty + (conflict_matrix[i][j]*(Math.pow(2, (5-(Math.abs(timeslot[j][1]-timeslot[i][1]))))));
+                        }
+                    }
+                }
+            }
+            //dibagi jumlah student
+            penaltyFinal = penalty/student.size();
+            System.out.println("penalty :");
+            System.out.println(penaltyFinal);
+            
             
             //hill climbing
             
@@ -389,7 +383,7 @@ public class TimeTable {
     
     public static void export(int[][]timeslot, String filename){
         try{    
-            FileWriter fw=new FileWriter("D:\\"+filename+".sol");    
+            FileWriter fw=new FileWriter("C:\\TORONTO\\"+filename+".sol");    
             for (int i = 0; i <timeslot.length; i++) {
                 for (int j = 0; j <timeslot[i].length; j++) {
                       fw.write(timeslot[i][j]+ " ");
@@ -401,7 +395,7 @@ public class TimeTable {
         } catch(Exception e){
         	System.out.println(e);
         }    
-            System.out.println("File "+filename+".sol berhasil disimpan di D");    
+            System.out.println("File "+filename+".sol berhasil disimpan di C");    
     }
     
 }
